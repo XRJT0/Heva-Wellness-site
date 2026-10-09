@@ -46,7 +46,7 @@ em.s, .s { font-family: var(--f-serif); font-style: italic; font-weight: 400; le
 .skip { position: absolute; left: -9999px; top: 8px; z-index: 50; background: var(--forest); color: var(--on-forest); padding: 10px 16px; border-radius: 999px }
 .skip:focus { left: 16px }
 
-.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 16px }
+.wrap { max-width: 100%; margin: 0 auto; display: grid; gap: 16px }
 main { display: grid; gap: 16px; min-width: 0 }
 
 /* buttons */
