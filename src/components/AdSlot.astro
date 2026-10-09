@@ -1,0 +1,33 @@
+---
+/**
+ * A single responsive AdSense unit.
+ * Renders nothing until PUBLIC_ADSENSE_CLIENT and the slot ID are set,
+ * so the site looks clean during AdSense review.
+ *
+ * AdSense policy reminders:
+ * - Label ads ("Advertisement") and keep them visually distinct from content.
+ * - Never place ads on pages without real content (404, thank-you, legal pages).
+ * - Don't place ads where they could be mistaken for navigation or buttons.
+ */
+import { ADSENSE } from '@/consts';
+interface Props { slot: keyof typeof ADSENSE.slots; format?: 'auto' | 'fluid' | 'rectangle'; layout?: string }
+const { slot, format = 'auto', layout } = Astro.props;
+const slotId = ADSENSE.slots[slot];
+const enabled = Boolean(ADSENSE.client && slotId);
+---
+
+{enabled && (
+  <aside class="ad" aria-label="Advertisement">
+    <span class="ad-label">Advertisement</span>
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={ADSENSE.client}
+      data-ad-slot={slotId}
+      data-ad-format={format}
+      data-ad-layout={layout}
+      data-full-width-responsive="true"
+    ></ins>
+    <script is:inline>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+)}

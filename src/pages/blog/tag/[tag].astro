@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogList from '@/components/BlogList.astro';
+import { getPosts, slugify, type Post } from '@/lib/posts';
+
+export const getStaticPaths = (async () => {
+  const all = await getPosts();
+  const tags = new Map<string, string>();
+  all.forEach((p) => p.data.tags.forEach((t) => tags.set(slugify(t), t)));
+  return [...tags].map(([slug, name]) => ({
+    params: { tag: slug },
+    props: { name, posts: all.filter((p) => p.data.tags.some((t) => slugify(t) === slug)) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag } = Astro.params as { tag: string };
+const { name, posts } = Astro.props as { name: string; posts: Post[] };
+---
+
+<!-- Tag pages with fewer than 3 posts are thin content, so they're noindexed until they grow. -->
+<BaseLayout
+  title={`Articles tagged “${name}”`}
+  description={`All Heva Journal articles about ${name}: practical, evidence-based guidance reviewed by clinicians.`}
+  noindex={posts.length < 3}
+>
+  <BlogList
+    title={`Tagged: <em class="s">${name}</em>`}
+    intro={`${posts.length} article${posts.length === 1 ? '' : 's'} about ${name}.`}
+    posts={posts}
+    crumbs={[{ name: 'Home', href: '/' }, { name: 'Journal', href: '/blog/' }, { name: name, href: `/blog/tag/${tag}/` }]}
+  />
+</BaseLayout>

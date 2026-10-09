@@ -1,0 +1,60 @@
+---
+/**
+ * Lightweight cookie consent wired to Google Consent Mode v2.
+ *
+ * For visitors in the EEA, UK and Switzerland, Google requires a
+ * Google-certified CMP to serve personalised ads. The simplest route:
+ * in AdSense → Privacy & messaging, publish a "European regulations" message.
+ * Google's CMP then handles those regions, and you can set
+ * PUBLIC_USE_GOOGLE_CMP=true to hide this banner.
+ */
+const useGoogleCMP = import.meta.env.PUBLIC_USE_GOOGLE_CMP === 'true';
+---
+
+{!useGoogleCMP && (
+  <div class="consent" id="consent" role="dialog" aria-modal="false" aria-labelledby="consent-title" hidden>
+    <div>
+      <p id="consent-title" class="consent-title">Cookies on Heva</p>
+      <p class="consent-text">
+        We use essential cookies to run this site. With your permission we also use cookies for analytics and to show
+        ads from Google. <a href="/cookie-policy/">Learn more</a>
+      </p>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="btn-plain" data-consent="denied">Essential only</button>
+      <button type="button" class="btn-solid" data-consent="granted">Accept all</button>
+    </div>
+  </div>
+)}
+
+<script is:inline define:vars={{ useGoogleCMP }}>
+  (function () {
+    var KEY = 'heva-consent';
+    var box = document.getElementById('consent');
+    function apply(v) {
+      if (typeof gtag !== 'function') return;
+      gtag('consent', 'update', {
+        ad_storage: v, ad_user_data: v, ad_personalization: v, analytics_storage: v,
+      });
+    }
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    if (saved) apply(saved);
+    else if (box) box.hidden = false;
+
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-consent],[data-open-consent]');
+      if (!t) return;
+      if (t.hasAttribute('data-open-consent')) {
+        if (useGoogleCMP && window.googlefc && googlefc.showRevocationMessage) {
+          googlefc.showRevocationMessage();
+        } else if (box) { box.hidden = false; }
+        return;
+      }
+      var v = t.getAttribute('data-consent');
+      try { localStorage.setItem(KEY, v); } catch (e) {}
+      apply(v);
+      if (box) box.hidden = true;
+    });
+  })();
+</script>

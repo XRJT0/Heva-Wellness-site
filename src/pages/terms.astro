@@ -1,0 +1,41 @@
+---
+import DocLayout from '@/layouts/DocLayout.astro';
+import { SITE } from '@/consts';
+const updated = new Date('2026-10-08');
+---
+
+<DocLayout
+  title="Terms of Use"
+  description="The terms that apply when you use the Heva Wellness website, including acceptable use, intellectual property, links, liability and governing law."
+  updated={updated}
+>
+  <p>By using this website you agree to these terms. If you don’t agree, please don’t use the site.</p>
+
+  <h2>About these terms</h2>
+  <p>These terms cover the website only. Membership of our programmes is covered by a separate agreement you sign when you join.</p>
+
+  <h2>Health information</h2>
+  <p>Articles on this site are for general information and education. They are not medical advice and don’t create a clinician–patient relationship. Read our <a href="/medical-disclaimer/">medical disclaimer</a>.</p>
+
+  <h2>Using the site</h2>
+  <ul>
+    <li>Don’t use the site for anything unlawful, or try to disrupt or gain unauthorised access to it.</li>
+    <li>Don’t copy our articles in bulk or republish them without written permission. Short quotes with a link back are welcome.</li>
+    <li>Don’t click on ads deliberately to inflate revenue, or encourage others to.</li>
+  </ul>
+
+  <h2>Intellectual property</h2>
+  <p>All text, graphics and design on this site belong to {SITE.name} Ltd or our licensors and are protected by copyright.</p>
+
+  <h2>Links and advertising</h2>
+  <p>We link to other websites and show ads from third parties. We don’t control and aren’t responsible for their content, products or privacy practices. An ad on this site is not an endorsement.</p>
+
+  <h2>Liability</h2>
+  <p>We work to keep information accurate and current but can’t guarantee it is complete or error-free. To the extent the law allows, we aren’t liable for losses arising from use of the site. Nothing here limits liability that can’t be limited by law.</p>
+
+  <h2>Changes</h2>
+  <p>We may update these terms. The date at the top shows the latest version.</p>
+
+  <h2>Governing law</h2>
+  <p>These terms are governed by the laws of England and Wales. Questions: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+</DocLayout>

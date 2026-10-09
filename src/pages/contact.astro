@@ -1,0 +1,80 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { SITE } from '@/consts';
+import { TREATMENTS } from '@/data/site';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }];
+// Set PUBLIC_CONTACT_ENDPOINT to a form service (Formspree, Basin, Netlify Forms…).
+const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? '';
+const contactPage = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  url: new URL('/contact/', Astro.site).href,
+  about: { '@id': new URL('/#organization', Astro.site).href },
+};
+---
+
+<BaseLayout
+  title="Contact Us"
+  description="Contact Heva Wellness by email, phone or our online form. Visit our studios in London and Bali, or ask the care team about any treatment."
+  ads={false}
+  jsonLd={[breadcrumbSchema(crumbs, Astro.site!), contactPage]}
+>
+  <section class="sec">
+    <Breadcrumbs items={crumbs} />
+    <div class="contact">
+      <div style="display:grid;gap:28px;align-content:start">
+        <h1 class="page-title">Talk to the <em class="s">care team</em></h1>
+        <p class="lede">We reply within four working hours, seven days a week. For medical emergencies call 999 (UK) or your local emergency number.</p>
+        <dl>
+          <div><dt class="label">Email</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
+          <div><dt class="label">Phone</dt><dd>{SITE.phone}</dd></div>
+          <div><dt class="label">London studio</dt><dd>{SITE.address.street}, {SITE.address.city} {SITE.address.postcode}</dd></div>
+          <div><dt class="label">Bali studio</dt><dd>Jl. Raya Ubud 88, Ubud, Bali 80571</dd></div>
+          <div><dt class="label">Hours</dt><dd>Mon–Sat, 8:00–19:00</dd></div>
+        </dl>
+      </div>
+
+      <form class="form" id="contact-form" method="post" action={endpoint || '/thank-you/'}>
+        <div class="field"><label for="c-name">Your name</label><input id="c-name" name="name" required autocomplete="name" /></div>
+        <div class="field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" required autocomplete="email" /></div>
+        <div class="field">
+          <label for="c-topic">What’s it about?</label>
+          <select id="c-topic" name="topic">
+            <option value="general">General question</option>
+            {TREATMENTS.map((t) => <option value={t.id}>{t.name}</option>)}
+            <option value="press">Press & partnerships</option>
+          </select>
+        </div>
+        <div class="field"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required></textarea></div>
+        <label class="check"><input type="checkbox" required id="c-consent" name="consent" /> I agree to Heva storing my details to reply to this message, as described in the <a href="/privacy-policy/">privacy policy</a>.</label>
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true" />
+        <button class="btn btn-dark" type="submit" style="justify-self:start">Send message <span class="ar" aria-hidden="true">→</span></button>
+        <p class="label" id="c-status" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ endpoint }}>
+    (function () {
+      var f = document.getElementById('contact-form');
+      var topic = new URLSearchParams(location.search).get('topic');
+      if (topic) { var s = document.getElementById('c-topic'); if (s.querySelector('option[value="' + topic + '"]')) s.value = topic; }
+      f.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var status = document.getElementById('c-status');
+        if (!endpoint) { location.href = '/thank-you/'; return; }
+        status.textContent = 'Sending…';
+        try {
+          var r = await fetch(endpoint, { method: 'POST', body: new FormData(f), headers: { Accept: 'application/json' } });
+          if (!r.ok) throw new Error();
+          location.href = '/thank-you/';
+        } catch (err) {
+          status.textContent = 'Your message didn’t send. Check your connection and try again, or email us directly.';
+        }
+      });
+    })();
+  </script>
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import DocLayout from '@/layouts/DocLayout.astro';
+const updated = new Date('2026-10-08');
+---
+
+<DocLayout
+  title="Medical Disclaimer"
+  description="Content on Heva Wellness is for general information only and is not medical advice. Always consult a qualified health professional about your own health."
+  updated={updated}
+>
+  <p>
+    The articles, guides and other content on this website are for general information and education only. They are not
+    a substitute for professional medical advice, diagnosis or treatment.
+  </p>
+  <ul>
+    <li>Always ask your doctor or another qualified health professional about any medical condition or before changing your diet, exercise, supplements or medication.</li>
+    <li>Never ignore professional medical advice or delay seeking it because of something you read here.</li>
+    <li>If you think you may have a medical emergency, call 999 in the UK, 112 in the EU, or your local emergency number straight away.</li>
+  </ul>
+
+  <h2>Supplements and products</h2>
+  <p>Food supplements are not intended to diagnose, treat, cure or prevent any disease. They can interact with medicines and may not be suitable during pregnancy or breastfeeding.</p>
+
+  <h2>Accuracy</h2>
+  <p>Our articles are written by qualified professionals and medically reviewed, following our <a href="/editorial-policy/">editorial policy</a>. Medical knowledge changes, so we date every article and update it when guidance changes. If you spot an error, please <a href="/contact/">tell us</a>.</p>
+
+  <h2>Advertising</h2>
+  <p>Ads on this site are served by Google and are chosen automatically. Showing an ad does not mean we endorse the product or service.</p>
+</DocLayout>

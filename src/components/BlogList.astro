@@ -1,0 +1,50 @@
+---
+/** Shared listing used by /blog/, /blog/page/N/, category and tag pages. */
+import type { Post } from '@/lib/posts';
+import { CATEGORIES } from '@/consts';
+import PostCard from './PostCard.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+
+interface Props {
+  title: string;
+  intro: string;
+  posts: Post[];
+  crumbs: { name: string; href: string }[];
+  activeCategory?: string;
+  prev?: string;
+  next?: string;
+  current?: number;
+  total?: number;
+}
+const { title, intro, posts, crumbs, activeCategory, prev, next, current, total } = Astro.props;
+---
+
+<section class="sec">
+  <Breadcrumbs items={crumbs} />
+  <div style="display:grid;gap:16px">
+    <h1 class="page-title" data-split set:html={title} />
+    <p class="lede">{intro}</p>
+  </div>
+  <nav aria-label="Categories">
+    <ul class="cat-nav">
+      <li><a href="/blog/" aria-current={!activeCategory ? 'page' : undefined}>All</a></li>
+      {Object.entries(CATEGORIES).map(([id, c]) => (
+        <li><a href={`/blog/category/${id}/`} aria-current={activeCategory === id ? 'page' : undefined}>{c.name}</a></li>
+      ))}
+    </ul>
+  </nav>
+</section>
+
+{posts.length ? (
+  <div class="grid-cards" data-stagger>{posts.map((p) => <div data-reveal><PostCard post={p} /></div>)}</div>
+) : (
+  <section class="sec"><p class="lede">No articles here yet. New guides are published every week.</p></section>
+)}
+
+{(prev || next) && (
+  <nav class="pager" aria-label="Pagination">
+    {prev ? <a href={prev} rel="prev">← Newer articles</a> : <span></span>}
+    <span class="label">Page {current} of {total}</span>
+    {next ? <a href={next} rel="next">Older articles →</a> : <span></span>}
+  </nav>
+)}

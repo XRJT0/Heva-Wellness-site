@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { FAQS } from '@/data/site';
+import { breadcrumbSchema, faqSchema } from '@/lib/schema';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'FAQ', href: '/faq/' }];
+---
+
+<BaseLayout
+  title="Frequently Asked Questions"
+  description="Answers to common questions about Heva Wellness: booking sessions, session length, locations, beginners, working with your GP and what happens if a plan isn’t working."
+  ads={false}
+  jsonLd={[breadcrumbSchema(crumbs, Astro.site!), faqSchema(FAQS)]}
+>
+  <section class="sec">
+    <Breadcrumbs items={crumbs} />
+    <div class="faq">
+      <div class="left">
+        <h1 class="page-title">Everything you <em class="s">need</em> to know</h1>
+        <p>Can’t find your answer? Our care team replies within four working hours.</p>
+        <a class="btn btn-lime" href="/contact/" style="justify-self:start">Contact us <span class="ar" aria-hidden="true">→</span></a>
+      </div>
+      <div class="acc">
+        {FAQS.map((f, i) => (
+          <details open={i === 0}>
+            <summary><h2 style="font:inherit;letter-spacing:inherit">{f.q}</h2><span class="ic" aria-hidden="true">+</span></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

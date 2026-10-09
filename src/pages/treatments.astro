@@ -1,0 +1,58 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { TREATMENTS } from '@/data/site';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Treatments', href: '/treatments/' }];
+const site = Astro.site!;
+const services = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: TREATMENTS.map((t, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: { '@type': 'Service', name: t.name, description: t.summary, provider: { '@id': new URL('/#organization', site).href } },
+  })),
+};
+---
+
+<BaseLayout
+  title="Treatments & Programmes"
+  description="Clinician-led programmes for weight management, hormone health, sleep and longevity. See what each includes, how long it lasts and what it costs."
+  ads={false}
+  jsonLd={[breadcrumbSchema(crumbs, site), services]}
+>
+  <section class="sec">
+    <Breadcrumbs items={crumbs} />
+    <div class="split">
+      <h1 class="page-title">Treatments that fit <em class="s">real life</em></h1>
+      <p class="aside">Every programme starts with a 45-minute consultation and baseline bloodwork. Plans are monthly, so you can pause or stop at any time.</p>
+    </div>
+    <div class="tx-list">
+      {TREATMENTS.map((t) => (
+        <article class="tx" id={t.id}>
+          <h2 style="font-size:clamp(22px,2.2vw,30px)">{t.name}</h2>
+          <p>{t.summary}</p>
+          <dl>
+            <div><dt>Price</dt><dd>{t.price}</dd></div>
+            <div><dt>Length</dt><dd>{t.duration}</dd></div>
+            <div><dt>Check-ins</dt><dd>{t.checkins}</dd></div>
+          </dl>
+          <a class="btn btn-dark" href={`/contact/?topic=${t.id}`} style="justify-self:start">Ask about {t.name.toLowerCase()} <span class="ar" aria-hidden="true">→</span></a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="sec-title">How it <em class="s">works</em></h2>
+    <ol class="tx-list" style="list-style:none;padding:0;margin:0">
+      <li class="tx"><p class="label">Step 1</p><h3>Consultation</h3><p>A 45-minute video or in-person call to understand your history, goals and routine.</p></li>
+      <li class="tx"><p class="label">Step 2</p><h3>Baseline tests</h3><p>Bloodwork and simple measurements so we track real change, not guesses.</p></li>
+      <li class="tx"><p class="label">Step 3</p><h3>Your plan</h3><p>A written plan covering food, movement, sleep and any treatment, agreed with you.</p></li>
+      <li class="tx"><p class="label">Step 4</p><h3>Regular check-ins</h3><p>Your clinician reviews progress and adjusts the plan as your results change.</p></li>
+    </ol>
+    <p class="notice">Prescription treatments are only offered when clinically appropriate, after assessment by a registered prescriber. Results vary between individuals.</p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,131 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import AuthorBox from '@/components/AuthorBox.astro';
+import AdSlot from '@/components/AdSlot.astro';
+import PostCard from '@/components/PostCard.astro';
+import Media from '@/components/Media.astro';
+import { AUTHORS, CATEGORIES } from '@/consts';
+import { getPosts, formatDate, readingTime, relatedPosts, slugify, type Post } from '@/lib/posts';
+import { articleSchema, breadcrumbSchema } from '@/lib/schema';
+
+export const getStaticPaths = (async () => {
+  const all = await getPosts();
+  return all.map((post) => ({ params: { slug: post.id }, props: { post, all } }));
+}) satisfies GetStaticPaths;
+
+const { post, all } = Astro.props as { post: Post; all: Post[] };
+const { Content, headings } = await render(post);
+const d = post.data;
+const author = AUTHORS[d.author];
+const reviewer = d.reviewedBy ? AUTHORS[d.reviewedBy] : undefined;
+const cat = CATEGORIES[d.category];
+const toc = headings.filter((h) => h.depth === 2);
+const related = relatedPosts(post, all);
+const site = Astro.site!;
+// Social/Google share image: a 1200×630 crop of the cover (or the site default).
+const og = d.cover
+  ? await getImage({ src: d.cover, width: 1200, height: 630, fit: 'cover', position: 'attention', format: 'jpg', quality: 82 })
+  : undefined;
+const ogUrl = og?.src;
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Journal', href: '/blog/' },
+  { name: cat.name, href: `/blog/category/${d.category}/` },
+  { name: d.title, href: `/blog/${post.id}/` },
+];
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  type="article"
+  image={ogUrl}
+  imageAlt={d.coverAlt}
+  imageWidth={og ? Number(og.attributes.width) : undefined}
+  imageHeight={og ? Number(og.attributes.height) : undefined}
+  publishedTime={d.pubDate}
+  modifiedTime={d.updatedDate}
+  ads={d.ads}
+  jsonLd={[articleSchema(post, site, ogUrl), breadcrumbSchema(crumbs, site)]}
+>
+  <div class="progress" data-progress aria-hidden="true"></div>
+  <article data-article>
+    <header class:list={['article-head', { 'has-cover': d.cover }]}>
+      <div class="ah-text" data-reveal>
+      <Breadcrumbs items={crumbs} />
+      <p class="label"><a href={`/blog/category/${d.category}/`}>{cat.name}</a> · {readingTime(post.body)} min read</p>
+      <h1 data-split>{d.title}</h1>
+      <p class="lede">{d.description}</p>
+      <div class="byline">
+        <span>By <a href={`/authors/${author.id}/`} rel="author">{author.name}</a></span>
+        {reviewer && <span>Medically reviewed by <a href={`/authors/${reviewer.id}/`}>{reviewer.name}</a></span>}
+        <span>Published <time datetime={d.pubDate.toISOString()}>{formatDate(d.pubDate)}</time></span>
+        {d.updatedDate && <span>Updated <time datetime={d.updatedDate.toISOString()}>{formatDate(d.updatedDate)}</time></span>}
+      </div>
+      </div>
+      {d.cover && (
+        <figure class="ah-media" data-reveal="clip" style="--d:.2s">
+          <Media src={d.cover} alt={d.coverAlt ?? ''} position={d.coverPosition} eager sizes="(max-width: 1000px) 100vw, 520px" />
+        </figure>
+      )}
+    </header>
+
+    <div style="height:16px"></div>
+
+    <div class="article-wrap">
+      <aside class="toc" aria-label="Table of contents">
+        {toc.length > 1 && (
+          <>
+            <p class="label">In this article</p>
+            <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+          </>
+        )}
+      </aside>
+
+      <div class="prose">
+        {d.keyPoints.length > 0 && (
+          <section class="key-points" aria-label="Key points">
+            <p class="label">Key points</p>
+            <ul>{d.keyPoints.map((k) => <li>{k}</li>)}</ul>
+          </section>
+        )}
+
+        <Content />
+
+        {d.ads && <AdSlot slot="endOfArticle" />}
+
+        {d.sources.length > 0 && (
+          <section class="sources" aria-labelledby="sources-title">
+            <h2 id="sources-title" style="font-size:20px">Sources</h2>
+            <ol>{d.sources.map((s) => <li><a href={s.url} rel="noopener nofollow" target="_blank">{s.title}</a></li>)}</ol>
+          </section>
+        )}
+
+        <p class="notice">
+          This article is for general information only and isn’t a substitute for advice from your doctor. If you have
+          a medical condition, are pregnant or take medication, check with a health professional before making changes.
+          <a href="/medical-disclaimer/">Medical disclaimer</a>.
+        </p>
+
+        {d.tags.length > 0 && (
+          <ul class="post-tags" aria-label="Tags">
+            {d.tags.map((t) => <li><a href={`/blog/tag/${slugify(t)}/`}>#{t}</a></li>)}
+          </ul>
+        )}
+
+        <AuthorBox id={d.author} reviewer={d.reviewedBy} />
+      </div>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="sec" aria-labelledby="related-title">
+      <div class="sec-head"><h2 id="related-title" class="label">Keep reading</h2><a class="label" href="/blog/">All articles →</a></div>
+      <div class="grid-cards" data-stagger>{related.map((p) => <div data-reveal><PostCard post={p} headingLevel="h3" /></div>)}</div>
+    </section>
+  )}
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import { NAV, SITE } from '@/consts';
+import Logo from './Logo.astro';
+interface Props { tone?: 'light' | 'default' }
+/** tone="light": transparent with light text while over the dark home hero. */
+const { tone = 'default' } = Astro.props;
+const path = Astro.url.pathname;
+const isActive = (href: string) => path.startsWith(href);
+---
+
+<header class="site-header" data-header data-tone={tone}>
+  <div class="bar">
+    <a class="logo" href="/" aria-label={`${SITE.name} home`}><Logo /><span>HEVA</span></a>
+
+    <nav aria-label="Main" class="nav-desktop">
+      <ul class="links">
+        {NAV.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <a class="btn-cta" href="/contact/">Contact us <span aria-hidden="true">→</span></a>
+
+    <details class="mobile-nav" data-mobile-nav>
+      <summary aria-label="Menu"><span></span><span></span></summary>
+      <div class="sheet">
+        <nav aria-label="Mobile">
+          <ul>
+            <li style="--i:0"><a href="/">Home</a></li>
+            {NAV.map((l, i) => <li style={`--i:${i + 1}`}><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>)}
+            <li style={`--i:${NAV.length + 1}`}><a href="/contact/">Contact</a></li>
+          </ul>
+        </nav>
+        <p class="sheet-foot">{SITE.email}<br />{SITE.phone}</p>
+      </div>
+    </details>
+  </div>
+</header>

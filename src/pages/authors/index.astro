@@ -1,0 +1,19 @@
+---
+import DocLayout from '@/layouts/DocLayout.astro';
+import { AUTHORS } from '@/consts';
+---
+
+<DocLayout
+  title="Our Experts"
+  heading='Our <em class="s">experts</em>'
+  description="Meet the dietitians, doctors and health writers who write and medically review every article in the Heva Journal."
+>
+  <p>Every article on Heva is written by someone with relevant training and checked by a medical reviewer before it’s published.</p>
+  {Object.values(AUTHORS).map((a) => (
+    <section>
+      <h2><a href={`/authors/${a.id}/`}>{a.name}</a></h2>
+      <p class="label">{a.role} · {a.credentials}</p>
+      <p>{a.bio}</p>
+    </section>
+  ))}
+</DocLayout>

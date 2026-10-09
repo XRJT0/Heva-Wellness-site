@@ -1,0 +1,240 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import Media from '@/components/Media.astro';
+import { getImage } from 'astro:assets';
+import heroImg from '@/assets/images/hero-path.jpg';
+import treeImg from '@/assets/images/tree-light.jpg';
+import groundImg from '@/assets/images/grounding.jpg';
+import mossImg from '@/assets/images/moss-texture.jpg';
+import wheatImg from '@/assets/images/wheat-field.jpg';
+import { SITE, AUTHORS } from '@/consts';
+import { STATS, TESTIMONIALS, TREATMENTS, FAQS } from '@/data/site';
+import { getPosts } from '@/lib/posts';
+import { organizationSchema, websiteSchema } from '@/lib/schema';
+
+const latest = (await getPosts()).slice(0, 3);
+const site = Astro.site!;
+const doc = AUTHORS['adam-jack'];
+const ticker = ['Clinical nutrition', 'Sleep programme', 'Hormone health', 'Breathwork', 'Longevity', 'Movement', 'Metabolic support', 'Mindful practice'];
+// Tiny blurred copy of the hero photo for the ambient background glow.
+const heroBlur = await getImage({ src: heroImg, width: 320, format: 'webp', quality: 50 });
+const arrow = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7h10M8 3l4 4-4 4"/></svg>';
+---
+
+<BaseLayout
+  title={SITE.name}
+  description={SITE.description}
+  headerTone="light"
+  ads={false}
+  jsonLd={[organizationSchema(site), websiteSchema(site)]}
+>
+  <section class="hero" aria-labelledby="hero-title" data-hero>
+    <div class="hero-bg" aria-hidden="true" style={`background-image:url(${heroBlur.src})`}></div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="avail" data-reveal style="--d:.15s"><span class="dot" aria-hidden="true"></span>Accepting new members</p>
+        <h1 id="hero-title" data-split>
+          Thoughtful care for your body. Designed to bring <em class="s">balance,</em> naturally and gently.
+        </h1>
+        <div class="hero-sub" data-reveal style="--d:.75s">
+          <p>
+            A gentle approach to wellness, guided by clinicians who listen first. Personalised plans that fit around
+            everyday life, not the other way round.
+          </p>
+          <a class="btn btn-light" href="/treatments/">Explore treatments <span class="ar" aria-hidden="true" set:html={arrow} /></a>
+        </div>
+      </div>
+
+      <figure class="hero-media" data-reveal="clip" style="--d:.35s">
+        <div class="hero-frame" data-parallax="-0.08">
+          <Media
+            src={heroImg}
+            alt="A woman in white walking a narrow path between rolling green hills"
+            sizes="(max-width: 1000px) 100vw, 520px"
+            position="50% 58%"
+            eager
+          />
+        </div>
+        <figcaption>
+          <a class="hero-chip" href="/blog/walking-after-meals/">
+            <span class="label">Today’s practice</span>
+            <span class="chip-title">A 10-minute mindful walk</span>
+            <span class="chip-go" aria-hidden="true" set:html={arrow} />
+          </a>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="hero-foot" data-reveal style="--d:.95s">
+      <span class="clock">London · <b class="num" data-clock="Europe/London">--:--</b></span>
+      <dl class="stats">
+        <div><dt>Members</dt><dd class="num" data-count>{STATS.members}</dd></div>
+        <div><dt>Avg. rating</dt><dd class="num" data-count>{STATS.rating}</dd></div>
+        <div><dt>Clinicians</dt><dd class="num" data-count>{STATS.clinicians}</dd></div>
+      </dl>
+      <span class="clock">Bali · <b class="num" data-clock="Asia/Makassar">--:--</b></span>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      {[0, 1].map(() => (
+        <span>{ticker.map((t) => <><b>{t}</b><i>✦</i></>)}</span>
+      ))}
+    </div>
+  </div>
+
+  <section class="sec" aria-labelledby="about-title">
+    <div class="sec-head" data-reveal><h2 id="about-title" class="label">About us</h2><span class="label">Est. {SITE.founded}</span></div>
+    <div class="about">
+      <div>
+        <div class="plate p-portrait tall has-img" data-reveal="clip">
+          <Media src={treeImg} alt="Sunlight streaming through the branches of an ancient tree" sizes="(max-width: 1000px) 100vw, 420px" position="50% 40%" />
+          <blockquote>“{TESTIMONIALS[0].quote}”</blockquote>
+        </div>
+        <p class="rating" data-reveal><b class="num">{STATS.rating}</b><span class="star" aria-hidden="true">★★★★★</span><span class="label">{STATS.reviews} reviews</span></p>
+      </div>
+      <div>
+        <p class="quote" data-split>
+          “We approach digital self-help as a <em class="s">mindful practice</em>, designed to support balance, clarity and
+          personal growth.”
+        </p>
+        <div class="about-grid" data-stagger>
+          <div class="plate p-studio has-img" data-reveal="clip">
+            <Media src={groundImg} alt="Bare feet standing on moss and tree roots in evening light" sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 300px" position="50% 40%" />
+            <span class="mono">Morning grounding · 5 min</span>
+          </div>
+          <div class="join" data-reveal>
+            <p>Join thousands of members finding steadier energy through small, guided changes.</p>
+            <a class="btn btn-dark" href="/about/" style="justify-self:start">Our approach <span class="ar" aria-hidden="true" set:html={arrow} /></a>
+          </div>
+          <div class="practice" aria-label="Example weekly practice: 16 hours" data-reveal>
+            <div class="row"><span class="label">Weekly practice</span><span class="label">Example</span></div>
+            <div class="row"><span class="big num">16<small>h</small></span><span class="label num">+2.5h vs last week</span></div>
+            <div class="week" aria-hidden="true">
+              {[55, 80, 30, 95, 65, 40, 70].map((h, i) => (
+                <div class={i === 2 || i === 5 ? '' : 'on'} data-d={'MTWTFSS'[i]} style={`height:${h}%;--i:${i}`}></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="feat-title">
+    <div class="sec-head" data-reveal><span class="label">Featured treatment</span><span class="label">Nutrition</span></div>
+    <div class="feat">
+      <div>
+        <h2 id="feat-title" data-split>Nutritional support for <em class="s">balanced</em> living</h2>
+        <ul class="tags" data-stagger>
+          {['Clinical nutrition', 'Metabolic support', 'Meal planning', '1:1 consultation'].map((t) => (
+            <li data-reveal><span class="tag">{t}</span></li>
+          ))}
+        </ul>
+        <div class="doc">
+          <div class="plate p-portrait has-img" data-reveal="clip">
+            <Media src={mossImg} alt="" sizes="(max-width: 640px) 120px, 200px" />
+            <span class="initials" aria-hidden="true">{doc.initials}</span>
+          </div>
+          <div class="info" data-reveal>
+            <div style="display:grid;gap:6px">
+              <h3>{doc.name}</h3>
+              <span class="label">{doc.role} · {doc.credentials}</span>
+            </div>
+            <p class="muted-p">Builds metabolic plans around how you actually eat, with fortnightly check-ins and a shared food log.</p>
+            <a class="btn btn-dark" href={`/authors/${doc.id}/`} style="justify-self:start">Meet Adam <span class="ar" aria-hidden="true" set:html={arrow} /></a>
+          </div>
+        </div>
+      </div>
+      <div class="plate p-bowl meal has-img" data-reveal="clip">
+        <Media src={wheatImg} alt="A hand brushing through a field of young green wheat" sizes="(max-width: 1000px) 100vw, 620px" position="50% 55%" />
+        <div class="tracker">
+          <div class="kc">
+            <div><span class="label">Daily target</span><div><b class="num" data-count>1,800</b><small>KCAL</small></div></div>
+            <div><span class="label">Lunch</span><div><b class="num" data-count>520</b><small>KCAL</small></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between"><span class="label">Today so far</span><span class="label num">40%</span></div>
+          <div class="ticks" aria-hidden="true">{Array.from({ length: 20 }, (_, i) => <i class={i < 8 ? 'on' : ''} style={`--i:${i}`}></i>)}</div>
+        </div>
+        <span class="mono" style="position:static;margin-top:auto">Whole grains · Fibre · Slow energy</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="tx-title">
+    <div class="sec-head" data-reveal><span class="label">Our treatments</span><span class="label">{TREATMENTS.length} programmes</span></div>
+    <div class="split">
+      <h2 id="tx-title" class="sec-title" data-split>Discover the treatment that’s <em class="s">right for you</em></h2>
+      <p class="aside" data-reveal>Every programme starts with bloodwork and a 45-minute consultation. You never commit to more than a month at a time.</p>
+    </div>
+    <div class="tx-list" data-stagger>
+      {TREATMENTS.map((t, i) => (
+        <a class="tx tx-link" href={`/treatments/#${t.id}`} data-reveal>
+          <span class="tx-num label">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{t.name}</h3>
+          <p>{t.summary}</p>
+          <dl>
+            <div><dt>Price</dt><dd>{t.price}</dd></div>
+            <div><dt>Length</dt><dd>{t.duration}</dd></div>
+            <div><dt>Check-ins</dt><dd>{t.checkins}</dd></div>
+          </dl>
+          <span class="tx-go" aria-hidden="true" set:html={arrow} />
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="journal-title">
+    <div class="sec-head" data-reveal><span class="label">From the journal</span><a class="label link-u" href="/blog/">View all articles →</a></div>
+    <h2 id="journal-title" class="sec-title" data-split>Guides written and reviewed by <em class="s">clinicians</em></h2>
+    <div class="grid-cards" data-stagger>{latest.map((p) => <div data-reveal><PostCard post={p} headingLevel="h3" /></div>)}</div>
+  </section>
+
+  <section class="testi" aria-labelledby="stories-title">
+    <div class="sec-head" data-reveal><span class="label">Member stories</span><span class="label">Shared with permission</span></div>
+    <h2 id="stories-title" data-split>Our members built on <em class="s">trusted</em> wellness care</h2>
+    <div class="tgrid" data-stagger>
+      {TESTIMONIALS.map((t) => (
+        <figure class="tcard" data-reveal>
+          <span class="qmark" aria-hidden="true">“</span>
+          <blockquote>{t.quote}</blockquote>
+          <figcaption><span class="av" aria-hidden="true">{t.initials}</span><span><b>{t.name}</b><small>{t.detail}</small></span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="faq-title">
+    <div class="sec-head" data-reveal><span class="label">FAQ</span><a class="label link-u" href="/faq/">All questions →</a></div>
+    <div class="faq">
+      <div class="left">
+        <h2 id="faq-title" class="sec-title" data-split>Everything you <em class="s">need</em> to know</h2>
+        <p data-reveal>Still curious? Our care team answers within four working hours, seven days a week.</p>
+        <a class="btn btn-lime" href="/contact/" style="justify-self:start" data-reveal>Talk to the care team <span class="ar" aria-hidden="true" set:html={arrow} /></a>
+      </div>
+      <div class="acc" data-stagger>
+        {FAQS.slice(0, 4).map((f, i) => (
+          <details open={i === 0} data-reveal>
+            <summary>{f.q}<span class="ic" aria-hidden="true">+</span></summary>
+            <div class="acc-a"><p>{f.a}</p></div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var els = document.querySelectorAll('[data-clock]');
+      function tick() {
+        els.forEach(function (el) {
+          el.textContent = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: el.dataset.clock }).format(new Date());
+        });
+      }
+      tick(); setInterval(tick, 30000);
+    })();
+  </script>
+</BaseLayout>

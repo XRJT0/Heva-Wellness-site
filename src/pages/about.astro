@@ -1,0 +1,56 @@
+---
+import DocLayout from '@/layouts/DocLayout.astro';
+import { SITE, AUTHORS } from '@/consts';
+import Media from '@/components/Media.astro';
+import joyImg from '@/assets/images/movement-joy.jpg';
+---
+
+<DocLayout
+  title="About Heva Wellness"
+  heading='About <em class="s">Heva</em>'
+  description="Heva Wellness is a clinician-led wellness service in London and Bali. Learn who we are, how we work and the experts behind our programmes and articles."
+>
+  <figure class="doc-figure" data-reveal="clip">
+    <Media src={joyImg} alt="Three women dancing outdoors under a blue sky, arms raised and laughing" sizes="(max-width: 800px) 100vw, 760px" position="50% 38%" eager />
+  </figure>
+
+  <p>
+    Heva Wellness started in {SITE.founded} with a simple idea: most people don’t need another extreme plan. They need
+    steady, personal guidance from someone qualified, delivered in a way that fits around work, family and real life.
+  </p>
+
+  <h2>What we do</h2>
+  <p>
+    We run clinician-led programmes for weight management, hormone health, sleep and long-term health, from our
+    studios in London and Ubud and online. Each member works with a named clinician, starts with a full consultation
+    and bloodwork, and gets a plan that changes as their results do.
+  </p>
+  <p>
+    Alongside our programmes we publish the <a href="/blog/">Heva Journal</a>: free, practical guides on sleep,
+    nutrition, movement and stress. We write them because good health information should be easy to find and easy to
+    trust.
+  </p>
+
+  <h2>How we work</h2>
+  <ul>
+    <li><strong>Evidence first.</strong> Our advice follows current clinical guidance and peer-reviewed research, not trends.</li>
+    <li><strong>Gentle by design.</strong> Small changes you can keep beat dramatic ones you can’t.</li>
+    <li><strong>Alongside your GP.</strong> We complement your regular doctor rather than replace them.</li>
+    <li><strong>Transparent.</strong> We say clearly what each treatment costs and what results are realistic.</li>
+  </ul>
+
+  <h2>The people behind our content</h2>
+  <p>Every health article is written by someone with relevant training and reviewed by a medical professional before publishing.</p>
+  <ul>
+    {Object.values(AUTHORS).map((a) => (
+      <li><a href={`/authors/${a.id}/`}>{a.name}</a>, {a.role} ({a.credentials})</li>
+    ))}
+  </ul>
+  <p>Read our <a href="/editorial-policy/">editorial policy</a> to see how articles are researched, reviewed and kept up to date.</p>
+
+  <h2>Get in touch</h2>
+  <p>
+    Visit us at {SITE.address.street}, {SITE.address.city} {SITE.address.postcode}, email
+    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>, or use our <a href="/contact/">contact page</a>.
+  </p>
+</DocLayout>

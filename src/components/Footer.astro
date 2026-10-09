@@ -1,0 +1,63 @@
+---
+import { SITE, CATEGORIES } from '@/consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="f-top">
+    <p class="f-title">Begin your journey into <em class="s">inner serenity.</em></p>
+    <a class="btn btn-lime" href="/treatments/">Start your plan <span class="ar" aria-hidden="true">→</span></a>
+  </div>
+
+  <div class="fcols">
+    <div class="f-news">
+      <h2 class="f-h">Monthly letter</h2>
+      <form class="news" id="newsletter" action="/thank-you/" method="get">
+        <label for="news-email" class="sr-only">Email address</label>
+        <input id="news-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email" />
+        <button type="submit">Subscribe</button>
+      </form>
+      <p class="f-muted">One quiet email a month. Recipes, research and studio news. Unsubscribe any time.</p>
+    </div>
+    <div>
+      <h2 class="f-h">Journal</h2>
+      <ul>
+        {Object.entries(CATEGORIES).map(([id, c]) => <li><a href={`/blog/category/${id}/`}>{c.name}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h2 class="f-h">Company</h2>
+      <ul>
+        <li><a href="/about/">About us</a></li>
+        <li><a href="/treatments/">Treatments</a></li>
+        <li><a href="/authors/">Our experts</a></li>
+        <li><a href="/editorial-policy/">Editorial policy</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="f-h">Visit</h2>
+      <address>
+        {SITE.address.street}<br />{SITE.address.city} {SITE.address.postcode}<br />
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a><br />{SITE.phone}
+      </address>
+    </div>
+  </div>
+
+  <p class="f-disclaimer">
+    Content on this site is for general information and is not a substitute for professional medical advice, diagnosis
+    or treatment. Always seek the advice of your doctor with any questions about a medical condition.
+    <a href="/medical-disclaimer/">Read our medical disclaimer</a>.
+  </p>
+
+  <div class="fbase">
+    <span>© {year} {SITE.name} Ltd</span>
+    <nav aria-label="Legal">
+      <a href="/privacy-policy/">Privacy</a>
+      <a href="/terms/">Terms</a>
+      <a href="/cookie-policy/">Cookies</a>
+      <a href="/medical-disclaimer/">Disclaimer</a>
+      <button type="button" class="linklike" data-open-consent>Cookie settings</button>
+    </nav>
+  </div>
+</footer>

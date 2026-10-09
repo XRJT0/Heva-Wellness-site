@@ -1,0 +1,34 @@
+---
+import DocLayout from '@/layouts/DocLayout.astro';
+import { SITE } from '@/consts';
+const updated = new Date('2026-10-08');
+---
+
+<DocLayout
+  title="Editorial Policy"
+  description="How Heva Wellness researches, writes, medically reviews, corrects and updates its health articles, and how advertising is kept separate from editorial content."
+  updated={updated}
+>
+  <p>People make real decisions about their health based on what they read. These are the standards every article in the Heva Journal meets before we publish it.</p>
+
+  <h2>Who writes our content</h2>
+  <p>Articles are written by people with relevant qualifications or professional experience, named on every page with a short bio. See <a href="/authors/">our experts</a>.</p>
+
+  <h2>Medical review</h2>
+  <p>Health articles are checked by a medically qualified reviewer for accuracy, safety and balance before publishing. The reviewer is named at the top of the article.</p>
+
+  <h2>Sources</h2>
+  <p>We rely on clinical guidelines (such as NHS and NICE), systematic reviews and peer-reviewed research, and list key sources at the end of each article. We avoid citing press releases or single small studies as proof.</p>
+
+  <h2>Keeping articles current</h2>
+  <p>Every article shows when it was published and last updated. We review health articles at least once a year, and sooner when guidance changes.</p>
+
+  <h2>Corrections</h2>
+  <p>If you find an error, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We correct factual errors promptly and note significant changes in the article.</p>
+
+  <h2>Advertising and independence</h2>
+  <p>We earn money from our programmes and from ads served by Google AdSense. Advertisers have no influence over what we write. Ads are clearly labelled and kept separate from article text. We don’t publish sponsored articles.</p>
+
+  <h2>Use of AI</h2>
+  <p>We may use software tools to help with research or proofreading, but every article is written, fact-checked and approved by the named people responsible for it.</p>
+</DocLayout>

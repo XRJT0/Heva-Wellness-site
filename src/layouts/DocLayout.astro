@@ -1,0 +1,22 @@
+---
+/** Plain, readable pages: About, legal, editorial policy. No ads by default. */
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { breadcrumbSchema } from '@/lib/schema';
+import { formatDate } from '@/lib/posts';
+
+interface Props { title: string; description: string; heading?: string; updated?: Date; noindex?: boolean; ads?: boolean }
+const { title, description, heading = title, updated, noindex = false, ads = false } = Astro.props;
+const crumbs = [{ name: 'Home', href: '/' }, { name: title, href: Astro.url.pathname }];
+---
+
+<BaseLayout title={title} description={description} noindex={noindex} ads={ads} jsonLd={breadcrumbSchema(crumbs, Astro.site!)}>
+  <article class="doc-page">
+    <Breadcrumbs items={crumbs} />
+    <header style="display:grid;gap:14px">
+      <h1 class="page-title" data-split set:html={heading} />
+      {updated && <p class="label">Last updated <time datetime={updated.toISOString()}>{formatDate(updated)}</time></p>}
+    </header>
+    <div class="prose"><slot /></div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import PostCard from '@/components/PostCard.astro';
+import { AUTHORS, type Author } from '@/consts';
+import { getPosts, type Post } from '@/lib/posts';
+import { breadcrumbSchema, personSchema } from '@/lib/schema';
+
+export const getStaticPaths = (async () => {
+  const all = await getPosts();
+  return Object.values(AUTHORS).map((a) => ({
+    params: { id: a.id },
+    props: {
+      author: a,
+      written: all.filter((p) => p.data.author === a.id),
+      reviewed: all.filter((p) => p.data.reviewedBy === a.id),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { author: a, written, reviewed } = Astro.props as { author: Author; written: Post[]; reviewed: Post[] };
+const site = Astro.site!;
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Our experts', href: '/authors/' }, { name: a.name, href: `/authors/${a.id}/` }];
+const profile = { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: personSchema(a.id, site) };
+---
+
+<BaseLayout title={`${a.name}, ${a.role}`} description={a.bio.slice(0, 158)} ads={false} jsonLd={[profile, breadcrumbSchema(crumbs, site)]}>
+  <section class="sec">
+    <Breadcrumbs items={crumbs} />
+    <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center">
+      <div class="av" style="width:88px;height:88px;font-size:20px;background:var(--forest);color:var(--on-forest)" aria-hidden="true">{a.initials}</div>
+      <div style="display:grid;gap:8px">
+        <h1 class="page-title" style="font-size:clamp(32px,4vw,56px)">{a.name}</h1>
+        <p class="label">{a.role} · {a.credentials}</p>
+      </div>
+    </div>
+    <p class="lede">{a.bio}</p>
+  </section>
+
+  {written.length > 0 && (
+    <section class="sec">
+      <h2 class="label">Articles by {a.name}</h2>
+      <div class="grid-cards">{written.map((p) => <PostCard post={p} headingLevel="h3" />)}</div>
+    </section>
+  )}
+  {reviewed.length > 0 && (
+    <section class="sec">
+      <h2 class="label">Articles medically reviewed by {a.name}</h2>
+      <div class="grid-cards">{reviewed.map((p) => <PostCard post={p} headingLevel="h3" />)}</div>
+    </section>
+  )}
+</BaseLayout>

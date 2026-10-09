@@ -1,0 +1,38 @@
+---
+import DocLayout from '@/layouts/DocLayout.astro';
+const updated = new Date('2026-10-08');
+---
+
+<DocLayout
+  title="Cookie Policy"
+  description="Which cookies Heva Wellness uses, why we use them, which are optional, and how to change your cookie choices at any time."
+  updated={updated}
+>
+  <p>Cookies are small files saved on your device. Some are needed for the site to work; others are optional and only set if you agree.</p>
+
+  <h2>Your choices</h2>
+  <p>
+    When you first visit, we ask whether you accept optional cookies. You can change your mind at any time using
+    <button type="button" class="linklike" style="text-decoration:underline;color:var(--forest-2)" data-open-consent>cookie settings</button>,
+    or by clearing cookies in your browser.
+  </p>
+
+  <h2>Cookies we use</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Provider</th><th>Purpose</th><th>Type</th><th>Expires</th></tr></thead>
+    <tbody>
+      <tr><td>heva-consent</td><td>Heva (local storage)</td><td>Remembers your cookie choice</td><td>Essential</td><td>Until cleared</td></tr>
+      <tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>Counts visits and measures how pages are used</td><td>Analytics (optional)</td><td>Up to 2 years</td></tr>
+      <tr><td>__gads, __gpi</td><td>Google AdSense</td><td>Measures ad performance and limits repeat ads</td><td>Advertising (optional)</td><td>Up to 13 months</td></tr>
+      <tr><td>IDE, test_cookie</td><td>Google (doubleclick.net)</td><td>Shows ads relevant to you on this and other sites</td><td>Advertising (optional)</td><td>Up to 13 months</td></tr>
+      <tr><td>FCCDCF, FCNEC</td><td>Google Funding Choices</td><td>Stores consent choices for advertising in the UK/EEA</td><td>Essential</td><td>Up to 13 months</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Third-party advertising</h2>
+  <p>
+    Google, as a third-party vendor, uses cookies to serve ads on this site. You can manage personalised ads at
+    <a href="https://www.google.com/settings/ads" rel="noopener" target="_blank">Google Ads Settings</a>. More detail is in our
+    <a href="/privacy-policy/">privacy policy</a>.
+  </p>
+</DocLayout>

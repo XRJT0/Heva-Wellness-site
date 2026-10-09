@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogList from '@/components/BlogList.astro';
+import { SITE } from '@/consts';
+import { getPosts } from '@/lib/posts';
+import { breadcrumbSchema } from '@/lib/schema';
+
+const all = await getPosts();
+const per = SITE.postsPerPage;
+const total = Math.max(1, Math.ceil(all.length / per));
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Journal', href: '/blog/' }];
+---
+
+<BaseLayout
+  title="The Heva Journal: Sleep, Nutrition & Movement Guides"
+  description="Evidence-based articles on sleep, nutrition, movement and stress, written by health professionals and medically reviewed before publishing."
+  jsonLd={breadcrumbSchema(crumbs, Astro.site!)}
+>
+  <BlogList
+    title='The <em class="s">Heva</em> Journal'
+    intro="Practical, evidence-based guides on sleep, nutrition, movement and stress. Every health article is written by a qualified professional and medically reviewed before it goes live."
+    posts={all.slice(0, per)}
+    crumbs={crumbs}
+    next={total > 1 ? '/blog/page/2/' : undefined}
+    current={1}
+    total={total}
+  />
+</BaseLayout>

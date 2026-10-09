@@ -1,0 +1,22 @@
+---
+import { AUTHORS } from '@/consts';
+interface Props { id: string; reviewer?: string }
+const { id, reviewer } = Astro.props;
+const a = AUTHORS[id];
+const r = reviewer ? AUTHORS[reviewer] : undefined;
+---
+
+<section class="author-box" aria-label="About the author">
+  <div class="av" aria-hidden="true">{a.initials}</div>
+  <div>
+    <p class="label">Written by</p>
+    <p class="ab-name"><a href={`/authors/${a.id}/`} rel="author">{a.name}</a>, {a.credentials}</p>
+    <p class="ab-bio">{a.bio}</p>
+    {r && (
+      <p class="ab-review">
+        Medically reviewed by <a href={`/authors/${r.id}/`}>{r.name}</a>, {r.credentials}.
+        <a href="/editorial-policy/">How we review content</a>
+      </p>
+    )}
+  </div>
+</section>

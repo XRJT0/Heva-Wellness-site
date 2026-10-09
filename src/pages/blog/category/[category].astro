@@ -1,0 +1,34 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogList from '@/components/BlogList.astro';
+import { CATEGORIES } from '@/consts';
+import { getPosts, type Post } from '@/lib/posts';
+import { breadcrumbSchema } from '@/lib/schema';
+
+export const getStaticPaths = (async () => {
+  const all = await getPosts();
+  return Object.keys(CATEGORIES).map((category) => ({
+    params: { category },
+    props: { posts: all.filter((p) => p.data.category === category) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category } = Astro.params as { category: string };
+const { posts } = Astro.props as { posts: Post[] };
+const cat = CATEGORIES[category];
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Journal', href: '/blog/' },
+  { name: cat.name, href: `/blog/category/${category}/` },
+];
+---
+
+<BaseLayout
+  title={`${cat.name} Articles & Guides`}
+  description={`${cat.description} Written by health professionals and medically reviewed at Heva Wellness.`}
+  noindex={posts.length === 0}
+  jsonLd={breadcrumbSchema(crumbs, Astro.site!)}
+>
+  <BlogList title={cat.name} intro={cat.description} posts={posts} crumbs={crumbs} activeCategory={category} />
+</BaseLayout>

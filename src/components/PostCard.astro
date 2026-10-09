@@ -1,0 +1,24 @@
+---
+import type { Post } from '@/lib/posts';
+import { formatDate, readingTime } from '@/lib/posts';
+import { CATEGORIES, AUTHORS } from '@/consts';
+import Cover from './Cover.astro';
+interface Props { post: Post; headingLevel?: 'h2' | 'h3' }
+const { post, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+const { title, description, pubDate, category, author, cover, coverAlt, coverPosition } = post.data;
+---
+
+<article class="card">
+  <a href={`/blog/${post.id}/`} class="card-link">
+    <Cover src={cover} alt={coverAlt ?? ''} position={coverPosition} category={category} label={CATEGORIES[category].name} />
+    <div class="card-body">
+      <p class="label">{CATEGORIES[category].name} · {readingTime(post.body)} min read</p>
+      <H class="card-title">{title}</H>
+      <p class="card-desc">{description}</p>
+      <p class="card-meta">
+        {AUTHORS[author].name} · <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+      </p>
+    </div>
+  </a>
+</article>

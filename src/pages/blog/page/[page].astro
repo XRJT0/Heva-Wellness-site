@@ -1,0 +1,36 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogList from '@/components/BlogList.astro';
+import { SITE } from '@/consts';
+import { getPosts, type Post } from '@/lib/posts';
+
+export const getStaticPaths = (async () => {
+  const all = await getPosts();
+  const per = SITE.postsPerPage;
+  const total = Math.ceil(all.length / per);
+  // Page 1 lives at /blog/, so start at 2.
+  return Array.from({ length: Math.max(0, total - 1) }, (_, i) => {
+    const page = i + 2;
+    return { params: { page: String(page) }, props: { posts: all.slice((page - 1) * per, page * per), page, total } };
+  });
+}) satisfies GetStaticPaths;
+
+const { posts, page, total } = Astro.props as { posts: Post[]; page: number; total: number };
+---
+
+<BaseLayout
+  title={`The Heva Journal, page ${page}`}
+  description={`Older articles from the Heva Journal on sleep, nutrition, movement and stress. Page ${page} of ${total}.`}
+>
+  <BlogList
+    title={`The <em class="s">Heva</em> Journal · Page ${page}`}
+    intro="Practical, evidence-based guides on sleep, nutrition, movement and stress."
+    posts={posts}
+    crumbs={[{ name: 'Home', href: '/' }, { name: 'Journal', href: '/blog/' }, { name: `Page ${page}`, href: `/blog/page/${page}/` }]}
+    prev={page === 2 ? '/blog/' : `/blog/page/${page - 1}/`}
+    next={page < total ? `/blog/page/${page + 1}/` : undefined}
+    current={page}
+    total={total}
+  />
+</BaseLayout>

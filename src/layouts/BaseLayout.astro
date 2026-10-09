@@ -1,0 +1,112 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@/styles/global.css';
+
+import SEO from '@/components/SEO.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import ConsentBanner from '@/components/ConsentBanner.astro';
+import { SITE, ADSENSE, ANALYTICS } from '@/consts';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Load the AdSense library on this page. Off for legal/utility pages. */
+  ads?: boolean;
+  /** "light" = header starts transparent over a dark hero (home page). */
+  headerTone?: 'light' | 'default';
+}
+
+const { ads = true, headerTone = 'default', ...seo } = Astro.props;
+const loadAds = ads && Boolean(ADSENSE.client);
+const newsletterEndpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT ?? '';
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1f3a2b" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Enable motion only when JS runs and the visitor hasn't asked for reduced motion.
+         Without JS, every element simply renders in place. -->
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+        document.documentElement.classList.add('motion');
+      }
+    </script>
+
+    <SEO {...seo} />
+
+    <!-- Google Consent Mode v2: everything denied until the visitor chooses. -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+        analytics_storage: 'denied', wait_for_update: 500
+      });
+    </script>
+
+    {ANALYTICS.ga4 && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS.ga4}`}></script>
+        <script is:inline define:vars={{ id: ANALYTICS.ga4 }}>gtag('js', new Date()); gtag('config', id);</script>
+      </>
+    )}
+
+    {loadAds && (
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE.client}`}
+        crossorigin="anonymous"
+      ></script>
+    )}
+  </head>
+  <body class:list={[headerTone === 'light' ? 'over-hero' : 'pad-header']}>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header tone={headerTone} />
+    <div class="wrap">
+      <main id="main">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+    <ConsentBanner />
+
+    <script>
+      import '@/scripts/motion';
+    </script>
+
+    <script is:inline define:vars={{ newsletterEndpoint }}>
+      // Newsletter: posts to your email provider if PUBLIC_NEWSLETTER_ENDPOINT is set,
+      // otherwise just goes to the thank-you page (no email is stored or put in the URL).
+      document.getElementById('newsletter')?.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (newsletterEndpoint) {
+          try { await fetch(newsletterEndpoint, { method: 'POST', body: new FormData(this), headers: { Accept: 'application/json' } }); } catch (err) {}
+        }
+        location.href = '/thank-you/';
+      });
+    </script>
+  </body>
+</html>
